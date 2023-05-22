@@ -6,21 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import javax.servlet.ServletException;
-
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import DAO.TicketDaoImpl;
 import Mocks.MockHttpServletRequest;
 import Mocks.MockHttpServletResponse;
-import Mocks.TicketDeletionHandlerMock;
 import model.TicketModel;
-import util.JsonConverter;
 
 public class GetAllTicketsTest {
 	
@@ -45,15 +41,13 @@ public class GetAllTicketsTest {
 	public void testDoGet() throws ServletException, IOException {
 		//given
 		TicketListMock.addTicket(new TicketModel(1005,5,"Sarah","Low","Email","sarah@example.com",5678901234L));
-		List<TicketModel> ticketList =(ArrayList<TicketModel>)TicketListMock.getTickets();
-        String jsonString = JsonConverter.convertToJson(ticketList);
         String expectedJson = "[{\"primaryId\":1005,\"id\":5,\"name\":\"Sarah\",\"priority\":\"Low\",\"medium\":\"Email\",\"email\":\"sarah@example.com\",\"phone\":5678901234}]";
         //when
         getAlltickets.doGet(request, response);
-        PrintWriter out = response.getWriter();
-        out.write(jsonString);
         String actualJson = stringWriter.toString();
         //then
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+		assertEquals("application/json", response.getContentType());
         assertEquals(expectedJson, actualJson);
        
 	}

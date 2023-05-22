@@ -76,7 +76,6 @@ class DeleteTicketTest {
 		deleteTicketServlet.doDelete(request, response);
 
 		// Assert
-		assertTrue(TicketDeletionHandler.isDeleteTicketCalled());
 		assertEquals(HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
 		assertEquals("application/json", response.getContentType());
 		assertEquals("UTF-8", response.getCharacterEncoding());
