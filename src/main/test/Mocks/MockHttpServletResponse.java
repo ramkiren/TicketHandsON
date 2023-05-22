@@ -11,47 +11,61 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 public class MockHttpServletResponse implements HttpServletResponse {
-	private StringWriter writer = new StringWriter();
-	private PrintWriter printWriter = new PrintWriter(writer);
+	 private PrintWriter writer;
+	
 	  private int status;
       private String contentType;
-      private StringWriter stringWriter;
+    
+    
+      private String characterEncoding;
 
-      public void setWriter(StringWriter stringWriter) {
-          this.stringWriter = stringWriter;
-      }
+     
 
-      @Override
-      public void setStatus(int status) {
-          this.status = status;
-      }
-
-      @Override
       public int getStatus() {
           return status;
       }
 
-      @Override
-      public void setContentType(String type) {
-          this.contentType = type;
-      }
-
-      @Override
       public String getContentType() {
           return contentType;
       }
 
-//      @Override
-//      public PrintWriter getWriter() {
-//          return new PrintWriter(stringWriter);
-//      }
-	@Override
-	public PrintWriter getWriter() {
-		return printWriter;
-	}
+      public String getCharacterEncoding() {
+          return characterEncoding;
+      }
+
+      @Override
+      public PrintWriter getWriter() {
+          return writer;
+      }
+
+      @Override
+      public void setStatus(int sc) {
+          status = sc;
+      }
+
+      @Override
+      public void setContentType(String type) {
+          contentType = type;
+      }
+
+      @Override
+      public void setCharacterEncoding(String charset) {
+          characterEncoding = charset;
+      }
+  
+      public void setWriter(StringWriter stringWriter) {
+          stringWriter = stringWriter;
+      }
+
+    
+     
+
+     
+
+	
 
 	public void setWriter(PrintWriter writer) {
-		this.printWriter = writer;
+		this.writer = writer;
 	}
 
 	@Override
@@ -64,15 +78,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
 	public int getBufferSize() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-
-	@Override
-	public String getCharacterEncoding() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
+	}	
 
 	@Override
 	public Locale getLocale() {
@@ -110,11 +116,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
 
 	}
 
-	@Override
-	public void setCharacterEncoding(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	public void setContentLength(int arg0) {

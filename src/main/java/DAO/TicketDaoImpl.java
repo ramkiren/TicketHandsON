@@ -46,7 +46,6 @@ public class TicketDaoImpl implements TicketDaoInterface {
 
 	public List<TicketModel> getTickets() {
 		ArrayList<TicketModel> ticketsList = new ArrayList<TicketModel>();
-
 		try (Connection connection = DatabaseConnectionUtil.getConnection();
 				PreparedStatement statement = connection.prepareStatement(LIST_TICKET_SQL)) {
 			ResultSet rs = statement.executeQuery();
@@ -65,7 +64,6 @@ public class TicketDaoImpl implements TicketDaoInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return ticketsList;
 	}
 
@@ -109,17 +107,29 @@ public class TicketDaoImpl implements TicketDaoInterface {
 		}
 		return ticketUpdate;
 	}
-
 	public boolean deleteTicket(Integer primaryId, Integer id) throws SQLException {
-		boolean ticketDelete = false;
-		try (Connection connection = DatabaseConnectionUtil.getConnection();
-				PreparedStatement statement = connection.prepareStatement(DELETE_TICKET_SQL)) {
-			statement.setInt(1, primaryId);
-			statement.setInt(2, id);
-			statement.executeUpdate();
-			ticketDelete = true;
-		}
-		return ticketDelete;
+	 
+	    if (!ticketExists(primaryId, id)) {
+	        throw new SQLException("Ticket with primary ID " + primaryId + " and ID " + id + " does not exist");
+	    }
+
+	    try (Connection connection = DatabaseConnectionUtil.getConnection();
+	         PreparedStatement statement = connection.prepareStatement(DELETE_TICKET_SQL)) {
+	        statement.setInt(1, primaryId);
+	        statement.setInt(2, id);
+	        int rowsAffected = statement.executeUpdate();
+	        return rowsAffected > 0;
+	    }
+	}
+
+	private boolean ticketExists(Integer primaryId, Integer id) throws SQLException {
+	    try (Connection connection = DatabaseConnectionUtil.getConnection();
+	         PreparedStatement statement = connection.prepareStatement(SELECT_TICKEY_BY_PRIMARYID)) {
+	        statement.setInt(1, primaryId);
+	        try (ResultSet rs = statement.executeQuery()) {
+	            return rs.next();
+	        }
+	    }
 	}
 
 }

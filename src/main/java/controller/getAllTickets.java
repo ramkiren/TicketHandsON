@@ -9,8 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import DAO.TicketDaoImpl;
@@ -20,14 +18,25 @@ import model.TicketModel;
 public class getAllTickets extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	TicketDaoImpl ticketDao;
-    @Override
-    public void init() throws ServletException {
-    	super.init();
-    	ticketDao = new TicketDaoImpl();
-    }
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		ticketDao = new TicketDaoImpl();
+	}
+
+	public getAllTickets(TicketDaoImpl ticketDao) throws ServletException {
+		this.ticketDao = ticketDao;
+	}
+	public getAllTickets() {
+	    // Constructor implementation
+	}
+
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("application/json");
+		response.setContentType("application/json");
 		doOptions(request, response);
 		ArrayList<TicketModel> ticketList = (ArrayList<TicketModel>) ticketDao.getTickets();
 		ObjectMapper mapper = new ObjectMapper();
@@ -35,8 +44,10 @@ public class getAllTickets extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.write(jsonString);
 	}
+
 	@Override
-	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		super.doOptions(request, response);
 		response.setHeader("Access-Control-Allow-Origin", "*");

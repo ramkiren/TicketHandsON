@@ -35,39 +35,30 @@ public class getTicketByID extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 	
-		System.out.print("hai    "+request.getPathInfo());
+		int ticketId;
         String pathInfo = request.getPathInfo();
        
 
         if (pathInfo == null || pathInfo.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-          
-    		System.out.print("null  "+response.getStatus());
-
             return;
         }
         String[] pathParts = pathInfo.split("/");
         if (pathParts.length != 2) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-          
-            System.out.print("no parm "+response.getStatus());
-
             return;
         }
-        int ticketId;
+        
         try {
             ticketId = Integer.parseInt(pathParts[1]);
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            System.out.print("non int   "+response.getStatus());
-
             return;
         }
       if(ticketId<0) {
 	 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-	 System.out.print("id<0  "+response.getStatus());
 	 return;
-     }
+     }else {
 		// TODO Auto-generated method stub
 		doOptions(request, response);
 		
@@ -78,16 +69,14 @@ public class getTicketByID extends HttpServlet {
 			response.setContentType("application/json");
 			ticketList=ticketDao.getTicket(ticketId);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = mapper.writeValueAsString(ticketList);
-		
-        
+		String jsonString = mapper.writeValueAsString(ticketList);   
 		out.write(jsonString);
+     }
 	}
-
 
 	@Override
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response)

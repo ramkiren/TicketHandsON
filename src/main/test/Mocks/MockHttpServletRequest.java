@@ -28,6 +28,16 @@ import javax.servlet.http.Part;
 public class MockHttpServletRequest implements HttpServletRequest {
 	private Map<String, String> params = new HashMap<>();
 	private String pathInfo;
+	  private BufferedReader reader;
+
+      public void setReader(BufferedReader reader) {
+          this.reader = reader;
+      }
+
+      @Override
+      public BufferedReader getReader() {
+          return reader;
+      }
 	@Override
 	public String getParameter(String name) {
 		return params.get(name);
@@ -151,11 +161,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
 		return null;
 	}
 
-	@Override
-	public BufferedReader getReader() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public String getRealPath(String path) {

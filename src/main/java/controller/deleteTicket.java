@@ -5,60 +5,51 @@ import java.io.PrintWriter;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import DAO.TicketDaoImpl;
-import model.MessageModel;
+import util.TicketDeletionHandler;
 
-;
+@WebServlet(name = "DeleteTicketServlet", urlPatterns = { "/ticket/delete" })
+public class deleteTicket extends HttpServlet {
 
-public class deleteTicket {
+	private static final long serialVersionUID = 1L;
 	TicketDaoImpl ticketDao;
-    public void init() throws ServletException {
-    	ticketDao = new TicketDaoImpl();
-    }
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	TicketDeletionHandler ticketDeletionHandler; // Added dependency
+
+	public deleteTicket(TicketDaoImpl ticketDao, TicketDeletionHandler ticketDeletionHandler) {
+		this.ticketDao = ticketDao;
+		this.ticketDeletionHandler = ticketDeletionHandler;
+	}
+
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException, JSONException {
 		PrintWriter out = response.getWriter();
-		JSONObject json = new JSONObject(request.getReader().lines().collect(Collectors.joining()));
+		String requestBody = request.getReader().lines().collect(Collectors.joining());
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			Integer primaryId = json.getInt("primaryId");
-			Integer id = json.getInt("id");
-			boolean isUpdated  = ticketDao.deleteTicket(primaryId, id);
-			if(isUpdated) {
-				MessageModel message = new MessageModel("Ticket deleted");
-				String jsonString = mapper.writeValueAsString(message);
+			String  responseString = ticketDeletionHandler.deleteTicket(requestBody); // Use the injected dependency
+			if (responseString=="Ticket deleted") {
+				String jsonString = mapper.writeValueAsString(responseString);
 				response.setStatus(200);
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
 				out.write(jsonString);
-			}
-			else {
-				throw new Exception();
-			}
-		} catch (JSONException e) {
-			System.out.println(e);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			response.setStatus(400);
-			String jsonString = mapper.writeValueAsString(e);
-			out.write(jsonString);
-
+			} else
+				throw new Exception("Failed to delete ticket");
 		} catch (Exception e) {
-			System.out.println(e);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			response.setStatus(400);
-			String jsonString = mapper.writeValueAsString(e);
+			String jsonString = new ObjectMapper().writeValueAsString(e);
 			out.write(jsonString);
 		}
 	}
-
 }
